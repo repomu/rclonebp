@@ -1,0 +1,28 @@
+#!/bin/sh
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+echo "-----> Install rclone"
+BUILD_DIR=$1
+VENDOR_DIR="vendor"
+FILE="rclone-v1.47.0-linux-amd64"
+DOWNLOAD_URL="https://github.com/ncw/rclone/releases/download/v1.47.0/$FILE.zip"
+
+echo "DOWNLOAD_URL = " $DOWNLOAD_URL | indent
+
+cd $BUILD_DIR
+mkdir -p $VENDOR_DIR
+cd $VENDOR_DIR
+mkdir -p $FILE
+cd $FILE
+wget -q $DOWNLOAD_URL
+unzip $FILE.zip
+mv $FILE/* .
+rm -rf $FILE $FILE.zip
+
+echo "exporting PATH" | indent
+PROFILE_PATH="$BUILD_DIR/.profile.d/rclone.sh"
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH="$PATH:${HOME}/vendor/rclone"' >> $PROFILE_PATH
